@@ -26,7 +26,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 		const storagedCart = localStorage.getItem('@RocketShoes:cart');
 
 		if (storagedCart) {
-		  return JSON.parse(storagedCart);
+			return JSON.parse(storagedCart);
 		}
 
 		return [];
@@ -42,14 +42,14 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 			const currentAmount = productExists ? productExists.amount : 0;
 			const amount = currentAmount + 1;
 
-			if(amount > stockAmount) {
+			if (amount > stockAmount) {
 				toast.error('Quantidade solicitada fora de estoque');
 				return;
 			}
 
-			if(productExists){
+			if (productExists) {
 				productExists.amount = amount;
-			}else {
+			} else {
 				const product = await api.get(`products/${productId}`);
 
 				const newProduct = { ...product.data, amount: 1 }
@@ -66,17 +66,13 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 	const removeProduct = (productId: number) => {
 		try {
 			const updatedCart = [...cart];
-			const productExists = updatedCart.find(p => p.id === productId);
+			const index = updatedCart.findIndex(p => p.id === productId);
 
-			if(!productExists) {
+			if (index >= 0) {
+				updatedCart.splice(index, 1);
+			}else {
 				toast.error('Erro na remoção do produto');
 				return;
-			}
-			const currentAmount = productExists ? productExists.amount : 0;
-			const amount = currentAmount ? currentAmount - 1 : 0;
-
-			if(productExists){
-				productExists.amount = amount;
 			}
 
 			setCart(updatedCart);
@@ -98,18 +94,18 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 			const stockAmount = stock.data.amount;
 			const amountForUpdate = amount;
 
-			if(amount < 1) {
+			if (amount < 1) {
 				return;
 			}
 
-			if(amountForUpdate > stockAmount) {
+			if (amountForUpdate > stockAmount) {
 				toast.error('Quantidade solicitada fora de estoque');
 				return;
 			}
 
-			if(productExists){
+			if (productExists) {
 				productExists.amount = amountForUpdate;
-			}else {
+			} else {
 				const product = await api.get(`products/${productId}`);
 
 				const newProduct = { ...product.data, amount: 1 }
